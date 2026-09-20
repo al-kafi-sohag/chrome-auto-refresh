@@ -1,0 +1,23 @@
+{
+  "manifest_version": 3,
+  "name": "My Auto Refresh",
+  "version": "2.0.0",
+  "description": "Auto refresh tabs with fixed or random intervals, a live on-page counter, and page watching.",
+  "minimum_chrome_version": "111",
+  "permissions": ["storage", "notifications"],
+  "background": { "service_worker": "background.js" },
+  "action": { "default_popup": "popup.html", "default_title": "Auto Refresh" },
+  "commands": {
+    "toggle-refresh": {
+      "suggested_key": { "default": "Alt+Shift+R" },
+      "description": "Start / stop auto refresh on the current tab"
+    }
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}

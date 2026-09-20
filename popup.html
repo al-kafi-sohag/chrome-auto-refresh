@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Auto Refresh</title>
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body class="w-[350px] bg-slate-50 font-sans text-[13px] text-slate-800 antialiased dark:bg-slate-900 dark:text-slate-100">
+
+  <!-- Header -->
+  <header class="flex items-center justify-between px-4 pb-3 pt-4">
+    <div class="flex items-center gap-2.5">
+      <div class="flex h-8 w-8 items-center justify-center rounded-xl bg-indigo-600 text-white shadow-sm">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8" />
+          <path d="M21 3v5h-5" />
+        </svg>
+      </div>
+      <div>
+        <h1 class="text-[15px] font-semibold leading-tight">Auto Refresh</h1>
+        <p class="text-[11px] text-slate-500 dark:text-slate-400">Fixed or random intervals</p>
+      </div>
+    </div>
+    <span id="pill" class="rounded-full bg-slate-200 px-2.5 py-1 text-[11px] font-semibold text-slate-600 dark:bg-slate-700 dark:text-slate-300">Stopped</span>
+  </header>
+
+  <!-- Live stats -->
+  <section class="grid grid-cols-3 gap-2 px-4">
+    <div class="card">
+      <div id="statCount" class="text-lg font-bold tabular-nums">0</div>
+      <div class="text-[10px] font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400">Refreshes</div>
+    </div>
+    <div class="card">
+      <div id="statNext" class="text-lg font-bold tabular-nums">–</div>
+      <div class="text-[10px] font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400">Next in</div>
+    </div>
+    <div class="card">
+      <div id="statTime" class="text-lg font-bold tabular-nums">–</div>
+      <div id="statTimeLabel" class="text-[10px] font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400">Elapsed</div>
+    </div>
+  </section>
+
+  <div class="px-4 pt-2.5">
+    <div class="h-1.5 overflow-hidden rounded-full bg-slate-200 dark:bg-slate-700">
+      <div id="bar" class="h-full w-0 rounded-full bg-indigo-500 transition-[width] duration-300 ease-linear"></div>
+    </div>
+  </div>
+
+  <p id="result" class="hidden"></p>
+  <p id="notice" class="mx-4 mt-2.5 hidden rounded-lg bg-amber-50 px-3 py-2 text-[11.5px] text-amber-800 ring-1 ring-amber-200 dark:bg-amber-500/10 dark:text-amber-200 dark:ring-amber-500/30"></p>
+
+  <!-- Settings (locked while running) -->
+  <fieldset id="form" class="space-y-3.5 px-4 pb-1 pt-3.5 transition-opacity">
+
+    <div>
+      <div class="label">Quick presets</div>
+      <div class="flex flex-wrap gap-1.5">
+        <button type="button" class="chip" data-min="5" data-max="10">5–10s</button>
+        <button type="button" class="chip" data-min="15" data-max="30">15–30s</button>
+        <button type="button" class="chip" data-min="30" data-max="60">30–60s</button>
+        <button type="button" class="chip" data-min="60" data-max="120">1–2 min</button>
+        <button type="button" class="chip" data-min="300" data-max="300">5 min</button>
+      </div>
+    </div>
+
+    <div>
+      <div class="grid grid-cols-2 gap-2.5">
+        <div>
+          <label class="label" for="min">Min (sec)</label>
+          <input id="min" type="number" min="1" step="0.5" value="30" class="field" />
+        </div>
+        <div>
+          <label class="label" for="max">Max (sec)</label>
+          <input id="max" type="number" min="1" step="0.5" value="60" class="field" />
+        </div>
+      </div>
+      <p class="mt-1 text-[11px] text-slate-500 dark:text-slate-400">Same value = fixed interval. Different values = a new random wait every time.</p>
+    </div>
+
+    <div class="grid grid-cols-2 gap-2.5">
+      <div>
+        <label class="label" for="duration">Stop after (min)</label>
+        <input id="duration" type="number" min="0" step="1" value="0" class="field" placeholder="0 = never" />
+      </div>
+      <div>
+        <label class="label" for="maxRefreshes">Max refreshes</label>
+        <input id="maxRefreshes" type="number" min="0" step="1" value="0" class="field" placeholder="0 = unlimited" />
+      </div>
+    </div>
+
+    <div>
+      <label class="label" for="watchMode">Watch the page</label>
+      <select id="watchMode" class="field">
+        <option value="none">Don't watch</option>
+        <option value="appears">Stop when text appears</option>
+        <option value="disappears">Stop when text disappears</option>
+        <option value="changes">Stop when content changes</option>
+      </select>
+      <input id="watchText" type="text" class="field mt-1.5 hidden" placeholder="Text to look for" />
+    </div>
+
+    <div class="divide-y divide-slate-200 rounded-xl bg-white px-3 shadow-sm ring-1 ring-slate-200 dark:divide-slate-700 dark:bg-slate-800 dark:ring-slate-700">
+      <label class="toggle">
+        <span>
+          <span class="block font-medium">On-page badge</span>
+          <span class="block text-[11px] text-slate-500 dark:text-slate-400">Live counter and countdown on the page</span>
+        </span>
+        <input id="showBadge" type="checkbox" class="sw-input sr-only" checked />
+        <span class="switch"></span>
+      </label>
+      <label class="toggle">
+        <span>
+          <span class="block font-medium">Hard reload</span>
+          <span class="block text-[11px] text-slate-500 dark:text-slate-400">Bypass the cache on every refresh</span>
+        </span>
+        <input id="bypassCache" type="checkbox" class="sw-input sr-only" />
+        <span class="switch"></span>
+      </label>
+      <label class="toggle">
+        <span>
+          <span class="block font-medium">Smart pause</span>
+          <span class="block text-[11px] text-slate-500 dark:text-slate-400">Wait if you're typing in a form field</span>
+        </span>
+        <input id="smartPause" type="checkbox" class="sw-input sr-only" checked />
+        <span class="switch"></span>
+      </label>
+      <label class="toggle">
+        <span>
+          <span class="block font-medium">Notify on match</span>
+          <span class="block text-[11px] text-slate-500 dark:text-slate-400">Desktop notification and title flash</span>
+        </span>
+        <input id="notify" type="checkbox" class="sw-input sr-only" checked />
+        <span class="switch"></span>
+      </label>
+    </div>
+  </fieldset>
+
+  <p id="error" class="mx-4 mt-2 hidden text-[12px] font-medium text-rose-600 dark:text-rose-400"></p>
+
+  <!-- Actions -->
+  <div class="flex gap-2 px-4 pb-2 pt-3">
+    <button id="toggle" type="button" class="btn btn-primary flex-1">Start</button>
+    <button id="pause" type="button" class="btn btn-ghost hidden">Pause</button>
+  </div>
+
+  <p class="px-4 pb-4 text-center text-[11px] text-slate-500 dark:text-slate-400">
+    Toggle with
+    <kbd id="shortcut" class="rounded border border-slate-300 bg-white px-1.5 py-0.5 font-mono text-[10.5px] dark:border-slate-600 dark:bg-slate-800">…</kbd>
+    ·
+    <button id="changeShortcut" type="button" class="underline hover:text-indigo-600 dark:hover:text-indigo-300">change</button>
+  </p>
+
+  <script src="popup.js"></script>
+</body>
+</html>
