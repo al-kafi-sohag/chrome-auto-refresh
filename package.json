@@ -4,9 +4,14 @@
   "private": true,
   "scripts": {
     "build:css": "tailwindcss -i ./src/input.css -o ./popup.css --minify",
-    "watch:css": "tailwindcss -i ./src/input.css -o ./popup.css --watch"
+    "watch:css": "tailwindcss -i ./src/input.css -o ./popup.css --watch",
+    "prep:firefox": "node scripts/prep-firefox.js",
+    "build:firefox": "npm run build:css && npm run prep:firefox && web-ext build --source-dir=dist-firefox --overwrite-dest",
+    "run:firefox": "npm run build:css && npm run prep:firefox && web-ext run --source-dir=dist-firefox",
+    "lint:firefox": "web-ext lint --source-dir=dist-firefox"
   },
   "devDependencies": {
-    "tailwindcss": "^3.4.17"
+    "tailwindcss": "^3.4.17",
+    "web-ext": "^10.7.0"
   }
 }

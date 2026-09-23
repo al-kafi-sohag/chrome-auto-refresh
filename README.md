@@ -1,8 +1,6 @@
-# Chrome Auto Refresh
+# Auto Refresh
 
-A Chrome extension (Manifest V3) that reloads a tab at a fixed or random interval, with a live on-page counter, refresh limits, and page watching that alerts you when something changes.
-
-Built for personal use and loaded as an unpacked extension. It is not published on the Chrome Web Store.
+A Manifest V3 browser extension (Chrome and Firefox) that reloads a tab at a fixed or random interval, with a live on-page counter, refresh limits, and page watching that alerts you when something changes.
 
 ## Features
 
@@ -13,24 +11,28 @@ Built for personal use and loaded as an unpacked extension. It is not published 
 - **Page watching**: stop and notify when text appears, when text disappears, or when the page (or a CSS selector) changes
 - **Smart pause**: skips a refresh while you are typing in a form field
 - **Hard reload**: optional cache bypass
-- **Pause / resume**, quick presets, and a keyboard shortcut (`Alt+Shift+R`, changeable in `chrome://extensions/shortcuts`)
+- **Pause / resume**, quick presets, and a keyboard shortcut (`Alt+Shift+R`, changeable in your browser's shortcut settings)
 - **Desktop notification** and tab-title flash when a watch matches
 - Per-tab settings, dark mode, no data collection, no network requests
 
 ## Installation
 
-1. Clone this repository:
+### Chrome
 
+1. Clone this repository:
 ```bash
    git clone https://github.com/al-kafi-sohag/chrome-auto-refresh
 ```
-
 2. Open `chrome://extensions` in Chrome.
 3. Turn on **Developer mode** (top right).
 4. Click **Load unpacked** and select the project folder.
 5. Pin the extension from the puzzle-piece menu.
 
 The compiled `popup.css` is committed, so no build step is needed just to use it.
+
+### Firefox
+
+Firefox uses a separate manifest (`manifest.firefox.json`) staged into `dist-firefox/` at build time. See [Firefox build](#firefox-build) below.
 
 ## Development
 
@@ -43,6 +45,21 @@ npm run watch:css    # rebuild on change
 ```
 
 After editing any file, click the reload icon on the extension card at `chrome://extensions`, then reload the tab you are testing.
+
+### Firefox build
+
+Uses Mozilla's official [`web-ext`](https://github.com/mozilla/web-ext) CLI, installed as a dev dependency.
+
+```bash
+npm install
+npm install -D web-ext   # one-time
+
+npm run run:firefox      # build CSS, stage dist-firefox/, launch Firefox with the extension loaded
+npm run lint:firefox     # run AMO's validation checks locally
+npm run build:firefox    # produce the upload-ready zip in web-ext-artifacts/
+```
+
+`dist-firefox/` only ever contains the runtime files the extension needs (`manifest.json` copied from `manifest.firefox.json`, `background.js`, `content.js`, `popup.html`, `popup.js`, `popup.css`, `LICENSE`) — never `node_modules`, `.git`, or build tooling. This avoids validation noise on the AMO uploader.
 
 ## Usage
 
@@ -69,11 +86,13 @@ Tips:
 
 | File | Purpose |
 | --- | --- |
-| `manifest.json` | Extension configuration, permissions, keyboard shortcut |
+| `manifest.json` | Chrome (MV3) manifest |
+| `manifest.firefox.json` | Firefox manifest — adds `background.scripts` fallback and `browser_specific_settings.gecko` |
 | `popup.html` / `popup.js` | Settings UI and live stats (Tailwind) |
 | `background.js` | Service worker: per-tab state, toolbar badge, notifications, shortcut |
 | `content.js` | Runs in the page: timer, page watching, on-page badge |
 | `src/input.css`, `tailwind.config.js` | Tailwind source and config; build output is `popup.css` |
+| `scripts/prep-firefox.js` | Stages a clean `dist-firefox/` folder for `web-ext` |
 
 The timer runs in the content script rather than `chrome.alarms`, because alarms cannot fire more often than every 30 seconds.
 
@@ -85,16 +104,18 @@ The timer runs in the content script rather than `chrome.alarms`, because alarms
 
 ## Limitations
 
-- Does not work on `chrome://` pages, the Chrome Web Store, or the built-in PDF viewer.
+- Does not work on `chrome://`/`about:` pages, extension stores, or the built-in PDF viewer.
 - Tabs opened before the extension was installed or updated need one manual reload.
 - Chrome's Memory Saver can discard inactive tabs, which stops refreshing. Exempt the tab in Chrome's performance settings.
 - Background tabs may have timers delayed by about a second.
 - Watching checks the page about one second after load, so content that renders later may be missed.
+- Firefox build requires Firefox 140+ (desktop) due to `data_collection_permissions` support.
 
 ## Roadmap
 
 - [x] Refresh counter
 - [x] Stop or notify when page text changes
+- [x] Firefox build
 - [ ] Saved profiles / presets
 - [ ] Sound alert on match
 - [ ] Per-site rules

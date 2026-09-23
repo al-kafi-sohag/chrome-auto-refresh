@@ -1,0 +1,36 @@
+{
+  "manifest_version": 3,
+  "name": "Free Auto Refresh",
+  "version": "1.0.0",
+  "description": "Free auto refresh for any tab, with fixed or random intervals, a live on-page counter, and page watching. Built by Al Kafi Sohag.",
+  "author": "Al Kafi Sohag (https://www.linkedin.com/in/al-kafi-sohag/)",
+  "homepage_url": "https://www.linkedin.com/in/al-kafi-sohag/",
+  "permissions": ["storage", "notifications"],
+  "background": {
+    "service_worker": "background.js",
+    "scripts": ["background.js"]
+  },
+  "action": { "default_popup": "popup.html", "default_title": "Free Auto Refresh" },
+  "commands": {
+    "toggle-refresh": {
+      "suggested_key": { "default": "Alt+Shift+R" },
+      "description": "Start / stop auto refresh on the current tab"
+    }
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "free-auto-refresh@al-kafi-sohag",
+      "strict_min_version": "140.0",
+      "data_collection_permissions": {
+        "required": ["none"]
+      }
+    }
+  }
+}
