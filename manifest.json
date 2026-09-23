@@ -1,12 +1,14 @@
 {
   "manifest_version": 3,
-  "name": "My Auto Refresh",
-  "version": "2.0.0",
-  "description": "Auto refresh tabs with fixed or random intervals, a live on-page counter, and page watching.",
+  "name": "Free Auto Refresh",
+  "version": "1.0.0",
+  "description": "Free auto refresh for any tab, with fixed or random intervals, a live on-page counter, and page watching. Built by Al Kafi Sohag.",
   "minimum_chrome_version": "111",
+  "author": "Al Kafi Sohag (https://www.linkedin.com/in/al-kafi-sohag/)",
+  "homepage_url": "https://www.linkedin.com/in/al-kafi-sohag/",
   "permissions": ["storage", "notifications"],
   "background": { "service_worker": "background.js" },
-  "action": { "default_popup": "popup.html", "default_title": "Auto Refresh" },
+  "action": { "default_popup": "popup.html", "default_title": "Free Auto Refresh" },
   "commands": {
     "toggle-refresh": {
       "suggested_key": { "default": "Alt+Shift+R" },

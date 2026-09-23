@@ -287,6 +287,7 @@ async function init() {
 
   if (st.endTime && Date.now() >= st.endTime) return finish("time");
   if (st.maxRefreshes > 0 && st.refreshCount >= st.maxRefreshes) return finish("count");
+  if (st.refreshCount === 0 && st.scheduledAt == null) return fire();
 
   schedule();
 }

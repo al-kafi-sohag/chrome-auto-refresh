@@ -14,19 +14,19 @@ const DEFAULTS = {
   notify: true,
 };
 
-const PILL_BASE = "rounded-full px-2.5 py-1 text-[11px] font-semibold";
+const PILL_BASE = "badge";
 const PILL = {
-  stopped: "bg-slate-200 text-slate-600 dark:bg-slate-700 dark:text-slate-300",
-  running: "bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300",
-  paused: "bg-amber-100 text-amber-700 dark:bg-amber-500/20 dark:text-amber-300",
-  finished: "bg-indigo-100 text-indigo-700 dark:bg-indigo-500/20 dark:text-indigo-300",
+  stopped: "border-zinc-200 bg-zinc-100 text-zinc-600 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300",
+  running: "border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-500/30 dark:bg-emerald-500/10 dark:text-emerald-300",
+  paused: "border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-300",
+  finished: "border-zinc-300 bg-zinc-900 text-zinc-50 dark:border-zinc-300 dark:bg-zinc-100 dark:text-zinc-900",
 };
 const PILL_TEXT = { stopped: "Stopped", running: "Running", paused: "Paused", finished: "Finished" };
 
-const RESULT_BASE = "mx-4 mt-2.5 rounded-lg px-3 py-2 text-[12px] font-medium ring-1";
+const RESULT_BASE = "mx-4 mt-2.5 rounded-md border px-3 py-2 text-[12px] font-medium";
 const RESULT = {
-  match: "bg-emerald-50 text-emerald-800 ring-emerald-200 dark:bg-emerald-500/10 dark:text-emerald-200 dark:ring-emerald-500/30",
-  done: "bg-indigo-50 text-indigo-800 ring-indigo-200 dark:bg-indigo-500/10 dark:text-indigo-200 dark:ring-indigo-500/30",
+  match: "border-emerald-200 bg-emerald-50 text-emerald-800 dark:border-emerald-500/30 dark:bg-emerald-500/10 dark:text-emerald-200",
+  done: "border-zinc-200 bg-zinc-50 text-zinc-800 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-200",
 };
 
 let tabId = null;
@@ -123,7 +123,7 @@ function render() {
   $("pill").textContent = PILL_TEXT[key];
 
   $("toggle").textContent = running ? "Stop" : finished ? "Start again" : "Start";
-  $("toggle").className = "btn flex-1 " + (running ? "btn-danger" : "btn-primary");
+  $("toggle").className = "flex-1 btn " + (running ? "btn-danger" : "btn-primary");
   $("pause").classList.toggle("hidden", !running);
   $("pause").textContent = paused ? "Resume" : "Pause";
 

@@ -50,7 +50,7 @@ After editing any file, click the reload icon on the extension card at `chrome:/
 2. Click the extension icon (or press `Alt+Shift+R` to start with your last settings).
 3. Pick a preset or set **Min** and **Max** seconds.
 4. Optionally set **Stop after**, **Max refreshes**, or a **Watch** rule.
-5. Click **Start**. Use the badge on the page or the popup to pause or stop.
+5. Click **Start** — it refreshes immediately, then continues at your chosen interval. Use the badge on the page or the popup to pause or stop.
 
 ### Watch modes
 
